@@ -1,0 +1,52 @@
+DECLARE @D_INI DATE = '2/6/2018'
+DECLARE @D_FIM DATE = '30/4/2022'
+
+DECLARE @D_ANO_INI		   INT = YEAR ( @D_INI )
+DECLARE @D_ANO_FIM		   INT = YEAR ( @D_FIM )
+DECLARE @INICIO_ANO_FISCAL INT = 7
+
+SET @D_INI = DATEFROMPARTS ( @D_ANO_INI , 1 , 1 )
+SET @D_FIM = DATEFROMPARTS ( @D_ANO_FIM , 12 , 31 )
+
+-- SELECT DATEDIFF ( DAY , @D_INI , @D_FIM  ) + 1
+; WITH DATAS AS
+(
+SELECT 
+	    DATEADD ( DAY , SEQUENCIA - 1 , @D_INI )			AS [DATA]
+  FROM
+		SEQUENCIA
+ WHERE
+		SEQUENCIA <= DATEDIFF ( DAY , @D_INI , @D_FIM  ) + 1
+)
+
+SELECT 
+		[DATA]
+	 ,  YEAR ( [DATA] )															AS ANO
+	 ,  DATEFROMPARTS ( YEAR ( [DATA] ) , 1 , 1 )								AS DATA_INI_ANO
+	 ,  DATEFROMPARTS ( YEAR ( [DATA] ) , 12 , 31 )								AS DATA_FIM_ANO
+	 ,  MONTH ( [DATA] )														AS MES
+	 ,  DATEFROMPARTS ( YEAR ( [DATA] ) , MONTH ( [DATA] ) , 1 )				AS DATA_INI_MES
+	 ,  EOMONTH ( [DATA] )														AS DATA_FIM_MES
+	 ,  DATEPART ( DAY , EOMONTH ( [DATA] ) ) 									AS DIAS_NO_MES
+	 ,  CONCAT ( YEAR ( [DATA] ) 
+			 ,   CONCAT ( REPLICATE ( '0' , 2 - LEN ( MONTH ( [DATA] ) ) ) 
+					  ,  MONTH ( [DATA] ) ) )									AS ANO_MES
+	 ,  DAY ( [DATA] )															AS DIA
+	 ,  DATENAME ( WEEKDAY , [DATA] )											AS NOME_DIA_DA_SEMANA
+	 ,  LEFT ( DATENAME ( WEEKDAY , [DATA] ) , 3 )								AS NOME_DIA_DA_SEMANA_ABREV
+	 ,  DATEPART ( WEEKDAY , [DATA] )											AS DIA_DA_SEMANA
+	 ,  DATEPART ( DAYOFYEAR , [DATA] )											AS DIA_DO_ANO
+	 ,  DATENAME ( MONTH , [DATA] )												AS NOME_DO_MES
+	 ,  LEFT ( DATENAME ( MONTH , [DATA] ) , 3 )								AS NOME_DO_MES_ABREV
+	 ,  DATEPART ( QUARTER , [DATA] )											AS TRIMESTRE
+	 ,  CONCAT ( 'T' , DATEPART ( QUARTER , [DATA] ) )							AS NOME_TRIMESTRE
+	 ,  DATEPART ( WEEK , [DATA] )												AS SEMANA_DO_ANO
+	 ,  CASE @INICIO_ANO_FISCAL
+			 WHEN 1		
+			 THEN YEAR ( [DATA] )
+			 ELSE YEAR ( [DATA] ) + CAST ( ( MONTH ( [DATA] ) 
+								  + ( 13 - @INICIO_ANO_FISCAL ) ) / 13 AS INT ) 
+		 END																	AS INICIO_ANO_FISCAL
+
+  FROM
+		DATAS

@@ -1,0 +1,46 @@
+CREATE PROCEDURE USP_ST_EMPRESAS
+
+AS
+
+BEGIN
+
+----------------------------------
+--TESTA A EXISTENCIA DAS TABELAS--
+----------------------------------
+
+
+IF OBJECT_ID ( 'PBS_PROCFIT_ST..ST_EMPRESAS' ) IS NULL
+
+BEGIN
+	
+CREATE TABLE ST_EMPRESAS
+	(
+		COD_EMPRESA						 NUMERIC ( 10 )
+	 ,  NOME							 VARCHAR ( 60 )
+	 ,  NOME_FANTASIA					 VARCHAR ( 60 )
+	)
+
+END
+
+
+----------------------------------
+--       POPULA AS TABELAS      --
+----------------------------------
+
+TRUNCATE TABLE ST_EMPRESAS
+
+INSERT INTO ST_EMPRESAS
+	(
+		COD_EMPRESA
+	 ,  NOME
+	 ,  NOME_FANTASIA
+	)
+
+SELECT
+		EMPRESA_USUARIA
+	 ,  NOME
+	 ,  NOME_FANTASIA
+  FROM
+		PBS_PROCFIT_DADOS..EMPRESAS_USUARIAS
+
+END

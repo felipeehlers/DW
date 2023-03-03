@@ -1,0 +1,36 @@
+MERGE DW_CLIENTES	D
+USING PBS_PROCFIT_ST.DBO.VW_CLIENTES   O  ON D.ENTIDADE = O.ENTIDADE
+
+WHEN MATCHED THEN UPDATE 
+				SET  
+					NOME			=	  O.NOME			
+				 ,  NOME_FANTASIA	=	  O.NOME_FANTASIA	
+				 ,  CLASSIFICAO		=	  O.CLASSIFICAO	
+				 ,  CIDADE			=	  O.CIDADE		
+				 ,  ESTADO			=	  O.ESTADO		
+				 ,  UF				=	  O.UF			
+
+WHEN NOT MATCHED BY TARGET THEN
+			INSERT
+				( 
+				   ENTIDADE
+				,  NOME		
+				,  NOME_FANTASIA
+				,  CLASSIFICAO	
+				,  CIDADE		
+				,  ESTADO		
+				,  UF		
+				)
+			VALUES
+				(
+				   O.ENTIDADE
+				,  O.NOME		
+				,  O.NOME_FANTASIA
+				,  O.CLASSIFICAO	
+				,  O.CIDADE		
+				,  O.ESTADO		
+				,  O.UF
+				)
+
+WHEN NOT MATCHED BY SOURCE THEN DELETE
+;
